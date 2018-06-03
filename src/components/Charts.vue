@@ -61,36 +61,19 @@ export default {
   methods: {
       getData() {
         axios.get('http://wb-predictivemaintenance-api.prsp7vkew2.eu-central-1.elasticbeanstalk.com/api/TorqueValues')
-            .then(response => {
-                console.log(response);
-                let avarage = [];
-                let lastOpen = [];
-                
-                response.data.forEach(elem => {
-                    if (elem.Direction === 'Open')  {
-                        avarage.push(elem.AverageTorque);                        
-                        lastOpen.push(elem.LastTorque);
-                    }
-                });
-
+            .then(response => {                
                 this.$refs.chart.mergeOptions({
-                    series: [{
-                        name: 'Average Open',
-                        type: 'bar',
-                        data: avarage,
-                        animationDelay: function (idx) {
-                            return idx * 10;
-                        }
-                    }, {
-                        name: 'Last Open',
-                        type: 'bar',
-                        data: lastOpen,
-                        animationDelay: function (idx) {
-                            return idx * 10;
-                        }
-                    }]
+                   dataset: {
+                       dimensions: ['Position', 'AverageTorque', 'LastTorque'],
+                       source: response.data
+                    },
+                    xAxis: {type: 'category'},
+                    yAxis: {},
+                    series: [
+                        {type: 'bar'},
+                        {type: 'bar'}
+                    ]
                 })
-                
             })
             .catch()
       }
